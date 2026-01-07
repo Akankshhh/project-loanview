@@ -121,7 +121,7 @@ export const generateLoanReportPdf = (i18n: I18nContextType, loanCalculationData
     return y + 10;
   };
 
-  const createTwoColumnTable = (data: Record<string, any>, y: number) => {
+  const createTwoColumnTable = (doc: jsPDF, data: Record<string, any>, y: number) => {
      (doc as any).autoTable({
         startY: y,
         theme: 'plain',
@@ -149,7 +149,7 @@ export const generateLoanReportPdf = (i18n: I18nContextType, loanCalculationData
       [t('applicationForm.sections.personalDetails.currentAddress')]: applicationData.personalDetails.currentAddress,
       [t('applicationForm.sections.personalDetails.permanentAddress')]: applicationData.personalDetails.permanentAddress,
     };
-    finalY = createTwoColumnTable(personalDetails, finalY);
+    finalY = createTwoColumnTable(doc, personalDetails, finalY);
 
     const loanRequirements = {
       [t('applicationForm.sections.loanRequirement.purpose')]: applicationData.loanRequirement.purpose,
@@ -157,7 +157,7 @@ export const generateLoanReportPdf = (i18n: I18nContextType, loanCalculationData
       [t('applicationForm.sections.loanRequirement.repaymentPeriod')]: applicationData.loanRequirement.repaymentPeriod,
       [t('applicationForm.sections.loanRequirement.loanType')]: applicationData.loanRequirement.loanType,
     };
-    finalY = createTwoColumnTable(loanRequirements, finalY + 5);
+    finalY = createTwoColumnTable(doc, loanRequirements, finalY + 5);
 
     finalY += 10;
   }
