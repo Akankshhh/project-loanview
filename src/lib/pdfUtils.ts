@@ -33,11 +33,14 @@ const createSampleLoanData = (): NonNullable<LoanReportData> => ({
 });
 
 // A simple, safe number formatter specifically for the PDF to avoid special characters.
-const formatPdfNumber = (value: number): string => {
-  if (typeof value !== 'number' || isNaN(value)) {
-    return '0.00';
+const formatPdfNumber = (value: number | string | undefined): string => {
+  if (value === undefined || value === null) return 'N/A';
+  const num = Number(value);
+  if (isNaN(num)) {
+    return String(value);
   }
-  return value.toFixed(2);
+  // Converts number to a plain string with 2 decimal places, no currency symbols or commas.
+  return num.toFixed(2);
 };
 
 
@@ -135,7 +138,7 @@ export const generateLoanReportPdf = (i18n: I18nContextType, loanCalculationData
 
     const loanRequirements = {
       [t('applicationForm.sections.loanRequirement.purpose')]: applicationData.loanRequirement.purpose,
-      [t('applicationForm.sections.loanRequirement.amount')]: applicationData.loanRequirement.amount,
+      [t('applicationForm.sections.loanRequirement.amount')]: formatPdfNumber(applicationData.loanRequirement.amount),
       [t('applicationForm.sections.loanRequirement.repaymentPeriod')]: applicationData.loanRequirement.repaymentPeriod,
       [t('applicationForm.sections.loanRequirement.loanType')]: applicationData.loanRequirement.loanType,
     };
