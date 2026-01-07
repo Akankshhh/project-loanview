@@ -29,12 +29,12 @@ const createSampleLoanData = (i18n: I18nContextType): NonNullable<LoanReportData
     };
 };
 
-
 // A simple, safe number formatter specifically for the PDF to avoid special characters.
-// This function is the key to preventing "garbage values". It only produces digits, a decimal point, and an optional prefix.
+// This function is the key to preventing "garbage values".
 const formatPdfNumber = (value: number | string | undefined, currency = false): string => {
     if (value === undefined || value === null || value === '') return 'N/A';
     
+    // Convert to number, removing any non-numeric characters first
     const num = Number(String(value).replace(/[^0-9.-]/g, ''));
     
     if (isNaN(num)) {
@@ -42,7 +42,7 @@ const formatPdfNumber = (value: number | string | undefined, currency = false): 
     }
   
     // Use toFixed(2) for a simple, universally safe number-to-string conversion.
-    // This avoids locale-specific characters like commas which caused the garbage values.
+    // This avoids locale-specific characters like commas.
     const fixedValue = num.toFixed(2);
     
     return currency ? `INR ${fixedValue}` : fixedValue;
