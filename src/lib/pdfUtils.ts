@@ -39,8 +39,8 @@ export const generateLoanReportPdf = (i18n: I18nContextType, loanCalculationData
   
   // --- FONT SETUP ---
   // Add the Roboto font file to the jsPDF instance.
-  doc.addFileToVFS("Roboto-Regular-normal.ttf", RobotoRegular);
-  doc.addFont("Roboto-Regular-normal.ttf", "Roboto", "normal");
+  doc.addFileToVFS("Roboto-Regular.ttf", RobotoRegular);
+  doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
   
   // Set Roboto as the universal font for the entire document.
   doc.setFont("Roboto", "normal");
