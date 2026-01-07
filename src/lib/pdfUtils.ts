@@ -33,7 +33,6 @@ const createSampleLoanData = (i18n: I18nContextType): NonNullable<LoanReportData
 const formatPdfNumber = (value: number | string | undefined, currency = false): string => {
     if (value === undefined || value === null || value === '') return 'N/A';
     
-    // Convert to number, removing any non-numeric characters first
     const num = Number(String(value).replace(/[^0-9.-]/g, ''));
     
     if (isNaN(num)) {
