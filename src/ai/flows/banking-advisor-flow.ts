@@ -34,6 +34,14 @@ const INTERNAL_KNOWLEDGE_BASE: Record<string, string> = {
 
   "education loan process": "The process for an Education Loan is straightforward: 1. Secure admission to your desired course/university. 2. Gather key documents: Admission Letter, academic records, KYC, and co-borrower's income proof. 3. Submit the completed application form online or at a branch. 4. The bank will review the application and may conduct a personal discussion. 5. Upon approval, you will sign the loan agreement. 6. The tuition fee is typically disbursed directly to the educational institution.",
 
+  "home loan process": "The Home Loan process involves a few key stages: 1. Submit your application with KYC, income proof (salary slips/IT returns), and property documents. 2. The bank conducts a credit appraisal and legal/technical verification of the property. 3. A formal loan sanction letter is issued. 4. You sign the final loan agreement. 5. The loan amount is disbursed to the seller/builder.",
+  
+  "personal loan process": "For a Personal Loan, the process is quick: 1. Check eligibility and apply online with your KYC and income proof. 2. The bank performs a rapid credit check. 3. If approved, you receive a loan offer with the amount and interest rate. 4. Accept the offer digitally, and the funds are disbursed to your account, often within 24-48 hours.",
+
+  "vehicle loan process": "The process for a Car or Vehicle Loan is: 1. Select the vehicle and get a pro-forma invoice from the dealer. 2. Submit the loan application with KYC, income proof, and the invoice. 3. The bank will verify your details and sanction the loan. 4. Sign the loan agreement and other documents. 5. The bank disburses the loan amount directly to the vehicle dealer.",
+
+  "business loan process": "The Business Loan process typically follows these steps: 1. Prepare a solid business plan and financial projections. 2. Gather documents: Business registration, KYC of promoters, last 3 years' audited financials, and bank statements. 3. Submit the application form along with the prepared documents. 4. The bank will assess the business's viability and creditworthiness. 5. After approval, the loan agreement is signed, and funds are disbursed.",
+
   "default": "I am your Banking Advisor. I can assist you with Home Loans, Education Loans, Personal Loans, and documentation requirements. How may I assist you today?"
 };
 
@@ -57,11 +65,29 @@ const bankingAdvisorGenkitFlow = ai.defineFlow(
     // 2. CHECK INTERNAL KNOWLEDGE BASE (Layer 1 - Instant & Reliable)
     // This logic ensures your demo questions NEVER fail.
     
-    if (query.includes("home") && (query.includes("eligible") || query.includes("eligibility") || query.includes("can i get"))) {
-        return { text: INTERNAL_KNOWLEDGE_BASE["home loan eligibility"] };
+    // Process-specific queries
+    if (query.includes("home") && query.includes("process")) {
+        return { text: INTERNAL_KNOWLEDGE_BASE["home loan process"] };
     }
     if ((query.includes("education") || query.includes("student")) && query.includes("process")) {
         return { text: INTERNAL_KNOWLEDGE_BASE["education loan process"] };
+    }
+    if (query.includes("personal") && query.includes("process")) {
+        return { text: INTERNAL_KNOWLEDGE_BASE["personal loan process"] };
+    }
+    if ((query.includes("car") || query.includes("vehicle")) && query.includes("process")) {
+        return { text: INTERNAL_KNOWLEDGE_BASE["vehicle loan process"] };
+    }
+    if (query.includes("business") && query.includes("process")) {
+        return { text: INTERNAL_KNOWLEDGE_BASE["business loan process"] };
+    }
+     if (query.includes("process")) { // General process query
+        return { text: INTERNAL_KNOWLEDGE_BASE["loan process"] };
+    }
+
+    // Eligibility and general info queries
+    if (query.includes("home") && (query.includes("eligible") || query.includes("eligibility") || query.includes("can i get"))) {
+        return { text: INTERNAL_KNOWLEDGE_BASE["home loan eligibility"] };
     }
     if (query.includes("interest") || query.includes("rate") || query.includes("roi")) {
         return { text: INTERNAL_KNOWLEDGE_BASE["home loan interest"] };
@@ -77,9 +103,6 @@ const bankingAdvisorGenkitFlow = ai.defineFlow(
     }
     if (query.includes("car") || query.includes("vehicle")) {
         return { text: INTERNAL_KNOWLEDGE_BASE["car loan"] };
-    }
-    if (query.includes("process")) {
-        return { text: INTERNAL_KNOWLEDGE_BASE["loan process"] };
     }
     if (query.length < 5 || query.includes("hello") || query.includes("hi")) {
         return { text: INTERNAL_KNOWLEDGE_BASE["default"] };
