@@ -3,7 +3,6 @@
 
 import { z } from 'zod';
 import { ai } from '@/ai/genkit';
-import { generate } from '@genkit-ai/ai';
 
 const BankingAdvisorInputSchema = z.object({
   query: z.string().describe("The user's question about banking or loans."),
@@ -68,7 +67,7 @@ const bankingAdvisorGenkitFlow = ai.defineFlow(
 
     // Scenario 2: User is asking for a process
     if (intent === 'process') {
-      const { text } = await generate({
+      const { text } = await ai.generate({
         model: 'gemini-1.5-flash-latest',
         prompt: `You are a helpful banking assistant. The user wants to know the application process for a specific type of loan.
         Based on the user's query about a "${loanType}", provide a clear, step-by-step guide for that loan application process.
@@ -80,7 +79,7 @@ const bankingAdvisorGenkitFlow = ai.defineFlow(
     }
 
     // Scenario 3: General question
-    const { text } = await generate({
+    const { text } = await ai.generate({
         model: 'gemini-1.5-flash-latest',
         prompt: `You are a helpful banking assistant. The user is asking a general question. 
         If the question is about loans or banking, provide a helpful answer. 
