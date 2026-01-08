@@ -80,10 +80,14 @@ const bankingAdvisorGenkitFlow = ai.defineFlow(
     }
 
     // Scenario 3: General question
-    // We provide a safe, generic response for anything else to avoid errors.
-    return {
-      text: "Thank you for your query. For detailed information on topics other than loan processes or eligibility, I recommend visiting one of our branches or contacting customer support. Would you like to check your loan eligibility or understand a loan process?",
-      flow: 'none',
-    };
+    const { text } = await generate({
+        model: 'gemini-1.5-flash-latest',
+        prompt: `You are a helpful banking assistant. The user is asking a general question. 
+        If the question is about loans or banking, provide a helpful answer. 
+        If it's off-topic, politely state that you can only answer banking-related questions.
+        User query: "${query}"`,
+         history: [{ role: 'user', content: [{ text: query }] }]
+      });
+    return { text, flow: 'none' };
   }
 );
