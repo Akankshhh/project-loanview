@@ -7,7 +7,7 @@ import {googleAI} from '@genkit-ai/googleai';
 export const ai = genkit({
   plugins: [
     googleAI({
-      apiKey: "AIzaSy_Emergency_Dummy_Key_for_10_Days_Fix", 
+      apiKey: "AIzaSy_Emergency_Dummy_Key_For_Demo_Only", 
     }),
   ],
   logLevel: "warn", // Keep logs clean to focus on critical errors.
