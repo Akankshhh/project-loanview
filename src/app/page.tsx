@@ -94,7 +94,7 @@ export default function DashboardPage() {
           <CardContent>
             <div className="flex flex-col items-center justify-center h-40 space-y-2 text-center">
               <Image 
-                src="https://picsum.photos/seed/activity/200/100" 
+                src="https://placehold.co/200x100/e2e8f0/64748b" 
                 alt="Abstract activity representation"
                 width={200}
                 height={100}

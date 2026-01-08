@@ -243,3 +243,10 @@ export const RATE_THRESHOLDS = {
   medium: 12.0, // Rates > 9.0% and <= 12.0% are medium
   // Rates > 12.0% are high
 };
+
+// This is a placeholder component.
+// It seems the content was mistakenly placed in a .tsx file instead of a constant file.
+// For now, returning null to avoid rendering anything.
+export default function HowToPlayPage() {
+  return null;
+}
