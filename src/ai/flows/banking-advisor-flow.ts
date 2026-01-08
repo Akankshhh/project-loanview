@@ -3,7 +3,6 @@
 
 import { ai } from '@/ai/genkit';
 import { generate } from '@genkit-ai/ai';
-import { geminiPro } from '@genkit-ai/googleai';
 import { z } from 'zod';
 
 const BankingAdvisorInputSchema = z.object({
@@ -79,7 +78,7 @@ const bankingAdvisorGenkitFlow = ai.defineFlow(
     // 3. ATTEMPT REAL AI GENERATION (Layer 2 - For complex/new questions)
     try {
       const llmResponse = await generate({
-        model: geminiPro,
+        model: ai.model, // Use the globally configured model from genkit.ts
         prompt: `
           You are a professional Banking Advisor for a major bank.
           User Question: "${userQuery}"
@@ -91,12 +90,16 @@ const bankingAdvisorGenkitFlow = ai.defineFlow(
           - Keep the answer concise (under 60 words).
         `,
       });
-      return { text: llmResponse.text() };
+      return { text: llmResponse.text };
 
-    } catch (error) {
+    } catch (error: any) {
       // 4. PROFESSIONAL FALLBACK (Layer 3 - Safety Net)
       // If the API Key fails, this runs. It looks like a standard banking response.
-      console.warn("[System Warning] External AI Connection unavailable. Using fallback.");
+      console.error("\n🔴 CRITICAL ERROR in bankingAdvisorFlow 🔴");
+      console.error("   Error Type:", error.name);
+      console.error("   Message:", error.message);
+      if (error.response) console.error("   API Response:", JSON.stringify(error.response, null, 2));
+      console.error("------------------------------------------------\n");
       
       return { text: "I can certainly assist with that inquiry. However, to ensure accuracy regarding your specific financial profile, I recommend visiting our nearest branch or checking the 'Loan Policy' section on our official website." };
     }
