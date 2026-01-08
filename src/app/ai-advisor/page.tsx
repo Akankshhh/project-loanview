@@ -5,20 +5,19 @@ import { ShieldCheck, Bot, User, Send, Loader2 } from 'lucide-react';
 import { useI18n } from '@/hooks/useI18n';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { bankingAdvisorFlow, BankingAdvisorInput, BankingAdvisorOutput } from '@/ai/flows/banking-advisor-flow';
+import { bankingAdvisorFlow } from '@/ai/flows/banking-advisor-flow';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
+import type { BankingAdvisorOutput } from '@/ai/flows/banking-advisor-flow';
 
 type Message = {
   id: number;
   text: string;
   sender: 'bot' | 'user';
-  flow?: 'none' | 'eligibilityCheck';
 };
 
 type EligibilityState = 'idle' | 'awaiting_cibil' | 'awaiting_income' | 'done';
 
-const MessageBubble = ({ message }: { message: { text: string; sender: 'bot' | 'user' } }) => {
+const MessageBubble = ({ message }: { message: Message }) => {
   const isBot = message.sender === 'bot';
   return (
     <div className={`flex w-full mb-6 ${isBot ? 'justify-start' : 'justify-end'}`}>
@@ -49,17 +48,16 @@ export default function AIAdvisorPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [eligibilityState, setEligibilityState] = useState<EligibilityState>('idle');
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const nextId = useRef(2); // Start message IDs from 2
+  const nextId = useRef(2); 
 
   useEffect(() => {
-    // Scroll to the bottom when new messages are added
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
-  const addMessage = (text: string, sender: 'bot' | 'user', flow: Message['flow'] = 'none') => {
-    setMessages(prev => [...prev, { id: nextId.current++, text, sender, flow }]);
+  const addMessage = (text: string, sender: 'bot' | 'user') => {
+    setMessages(prev => [...prev, { id: nextId.current++, text, sender }]);
   };
 
   const handleSendMessage = async () => {
@@ -74,15 +72,9 @@ export default function AIAdvisorPage() {
       if (eligibilityState !== 'idle') {
         processEligibility(userMessage);
       } else {
-        const history = messages.map(msg => ({
-          role: msg.sender === 'user' ? 'user' as const : 'model' as const,
-          content: [{ text: msg.text }],
-        }));
-
-        const input: BankingAdvisorInput = { query: userMessage, history: history.slice(1) };
-        const response: BankingAdvisorOutput = await bankingAdvisorFlow(input);
+        const response: BankingAdvisorOutput = await bankingAdvisorFlow({ query: userMessage });
         
-        addMessage(response.text, 'bot', response.flow);
+        addMessage(response.text, 'bot');
 
         if (response.flow === 'eligibilityCheck') {
           setEligibilityState('awaiting_cibil');
@@ -103,14 +95,15 @@ export default function AIAdvisorPage() {
         addMessage("Please provide a valid number for your CIBIL score.", 'bot');
       } else if (score < 650) {
         addMessage(`A CIBIL score of ${score} is generally considered low. Based on this, you are likely not eligible for most loans at this time. I recommend improving your score before applying.`, 'bot');
-        setEligibilityState('idle');
+        setEligibilityState('idle'); // Reset the flow
       } else {
         addMessage("Great! A score above 650 is a good start. What is your approximate monthly income in INR?", 'bot');
         setEligibilityState('awaiting_income');
       }
     } else if (eligibilityState === 'awaiting_income') {
+        // Any income is fine for this demo
         addMessage("Thank you for the information. Based on the initial details you've provided, you seem to be eligible to apply for a loan! For a formal decision, please proceed to our application page.", 'bot');
-        setEligibilityState('idle');
+        setEligibilityState('idle'); // Reset the flow
     }
   };
 
