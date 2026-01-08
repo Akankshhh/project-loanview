@@ -1,7 +1,7 @@
 
 'use client';
-import React, from 'react';
-import { ShieldCheck, Bot, User } from 'lucide-react';
+import React from 'react';
+import { ShieldCheck, Bot, User, Send } from 'lucide-react';
 import { useI18n } from '@/hooks/useI18n';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
