@@ -39,11 +39,14 @@ const formatPdfNumber = (i18n: I18nContextType, value: number | string | undefin
         return String(value);
     }
   
+    // Use a very basic formatting for the PDF to ensure compatibility, avoiding complex locale-specific characters.
+    const fixedValue = num.toFixed(2);
     if (currency) {
-      return i18n.formatNumber(num, { style: 'currency', currency: 'INR', minimumFractionDigits: 0 });
+      // Basic INR prefix, no symbol to avoid font issues.
+      return `INR ${fixedValue}`;
     }
     
-    return i18n.formatNumber(num, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return fixedValue;
 };
 
 
@@ -52,8 +55,7 @@ export const generateLoanReportPdf = (i18n: I18nContextType, loanCalculationData
   
   const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
   
-  // --- FONT SETUP ---
-  // Use a standard, built-in font like "Helvetica". This is the critical change to prevent all font-related errors.
+  // Use a standard, built-in font like "Helvetica".
   const FONT_FAMILY = "Helvetica";
   doc.setFont(FONT_FAMILY, "normal");
 
