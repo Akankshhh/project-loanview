@@ -30,8 +30,8 @@ const createSampleLoanData = (i18n: I18nContextType): NonNullable<LoanReportData
 };
 
 // A simple, safe number formatter specifically for the PDF to prevent rendering errors.
-const formatPdfNumber = (value: number | string | undefined, currency = false): string => {
-    if (value === undefined || value === null || value === '') return 'N/A';
+const formatPdfNumber = (i18n: I18nContextType, value: number | string | undefined, currency = false): string => {
+    if (value === undefined || value === null || value === '') return i18n.t('N/A');
     
     const num = Number(String(value).replace(/[^0-9.-]/g, ''));
     
@@ -39,10 +39,11 @@ const formatPdfNumber = (value: number | string | undefined, currency = false): 
         return String(value);
     }
   
-    // Use toFixed(2) for a simple, universally safe number-to-string conversion.
-    const fixedValue = num.toFixed(2);
+    if (currency) {
+      return i18n.formatNumber(num, { style: 'currency', currency: 'INR', minimumFractionDigits: 0 });
+    }
     
-    return currency ? `INR ${fixedValue}` : fixedValue;
+    return i18n.formatNumber(num, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
 
@@ -135,7 +136,7 @@ export const generateLoanReportPdf = (i18n: I18nContextType, loanCalculationData
 
     const loanRequirements = {
       [t('applicationForm.sections.loanRequirement.purpose')]: applicationData.loanRequirement.purpose,
-      [t('applicationForm.sections.loanRequirement.amount')]: formatPdfNumber(applicationData.loanRequirement.amount, true),
+      [t('applicationForm.sections.loanRequirement.amount')]: formatPdfNumber(i18n, applicationData.loanRequirement.amount, true),
       [t('applicationForm.sections.loanRequirement.repaymentPeriod')]: applicationData.loanRequirement.repaymentPeriod,
       [t('applicationForm.sections.loanRequirement.loanType')]: applicationData.loanRequirement.loanType,
     };
@@ -154,12 +155,12 @@ export const generateLoanReportPdf = (i18n: I18nContextType, loanCalculationData
   finalY = addSectionTitle(doc, t('pdf.keyFacts.title'), finalY);
   
   const keyFactsBody = [
-    [t('pdf.loanSummary.loanAmount'), formatPdfNumber(loanData.loanAmount, true)],
-    [t('pdf.loanSummary.interestRate'), `${loanData.interestRate.toFixed(2)}%`],
+    [t('pdf.loanSummary.loanAmount'), formatPdfNumber(i18n, loanData.loanAmount, true)],
+    [t('pdf.loanSummary.interestRate'), `${formatPdfNumber(i18n, loanData.interestRate)}%`],
     [t('pdf.loanSummary.tenure'), `${loanData.loanTenureMonths / 12} ${t('pdf.years')}`],
-    [t('pdf.loanSummary.monthlyEMI'), formatPdfNumber(loanData.emi, true)],
-    [t('pdf.loanSummary.totalInterest'), formatPdfNumber(loanData.totalInterest, true)],
-    [t('pdf.loanSummary.totalPayment'), formatPdfNumber(loanData.totalPayment, true)]
+    [t('pdf.loanSummary.monthlyEMI'), formatPdfNumber(i18n, loanData.emi, true)],
+    [t('pdf.loanSummary.totalInterest'), formatPdfNumber(i18n, loanData.totalInterest, true)],
+    [t('pdf.loanSummary.totalPayment'), formatPdfNumber(i18n, loanData.totalPayment, true)]
   ];
 
   (doc as any).autoTable({
@@ -205,8 +206,8 @@ export const generateLoanReportPdf = (i18n: I18nContextType, loanCalculationData
     head: [[ t('liveMarketAnalysis.bank'), t('liveMarketAnalysis.interestRate'), t('liveMarketAnalysis.estMonthlyEMI')]],
     body: comparisonProducts.map(p => [
       p.bankName,
-      `${p.interestRate.toFixed(2)}%`,
-      formatPdfNumber(p.emi, true)
+      `${formatPdfNumber(i18n, p.interestRate)}%`,
+      formatPdfNumber(i18n, p.emi, true)
     ]),
   });
   finalY = (doc as any).lastAutoTable.finalY + 15;
@@ -237,9 +238,9 @@ export const generateLoanReportPdf = (i18n: I18nContextType, loanCalculationData
     if (showRow) {
       scheduleBody.push([
           i,
-          formatPdfNumber(principalPayment, true),
-          formatPdfNumber(interestPayment, true),
-          formatPdfNumber(Math.max(0, balance), true),
+          formatPdfNumber(i18n, principalPayment, true),
+          formatPdfNumber(i18n, interestPayment, true),
+          formatPdfNumber(i18n, Math.max(0, balance), true),
       ]);
     } else if (i === initialMonthsToShow + 1) {
        scheduleBody.push(['...', '...', '...', '...']);
