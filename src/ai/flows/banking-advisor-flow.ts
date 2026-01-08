@@ -3,6 +3,7 @@
 
 import { ai } from '@/ai/genkit';
 import { generate } from '@genkit-ai/ai';
+import { gemini15Flash } from '@genkit-ai/googleai';
 import { z } from 'zod';
 
 const BankingAdvisorInputSchema = z.object({
@@ -79,7 +80,7 @@ const bankingAdvisorGenkitFlow = ai.defineFlow(
     try {
       console.log("   Sending to AI Model...");
       const llmResponse = await generate({
-        model: ai.model, // Use the globally configured model from genkit.ts
+        model: gemini15Flash, // Use the globally configured model from genkit.ts
         prompt: `
           You are a professional Banking Advisor for a major bank.
           User Question: "${userQuery}"
@@ -93,7 +94,7 @@ const bankingAdvisorGenkitFlow = ai.defineFlow(
       });
 
       console.log("   ✅ AI Response Generated successfully.");
-      return { text: llmResponse.text };
+      return { text: llmResponse.text() };
 
     } catch (error: any) {
       // 4. PROFESSIONAL FALLBACK (Layer 3 - Safety Net)
